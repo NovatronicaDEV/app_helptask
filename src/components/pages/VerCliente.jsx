@@ -27,15 +27,16 @@ const VerCliente = () => {
           // Lidar com o cenário em que o token não está disponível
           return;
         }
-     
+        
         const response = await axios.get(`http://localhost:3000/clients/`+id, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-  
+
         setClienteData(response.data.clients); // Armazena os dados do cliente no estado
       } catch (error) {
+        navigate("/pages/login");
         console.error("Erro ao obter dados do cliente:", error);
       }
     };

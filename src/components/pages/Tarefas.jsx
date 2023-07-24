@@ -16,7 +16,6 @@ import ViewGroupTask from "../UI/ViewGroupTask";
 import NewTarefa from "../UI/NewTarefa";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { Link } from "react-router-dom";
-
 import axios from "axios";
 const Tarefas = () => {
   const [stateView, setStateView] = useState(true);
@@ -150,7 +149,7 @@ const Tarefas = () => {
             )
             .map((task, index) =>
               stateView ? (
-                <Link to={"/pages/verTarefas"} key={index}>
+                <Link to={`/pages/verTarefas/${task.id}`} key={index}>
                   <ViewListTask task={task} />
                 </Link>
               ) : (

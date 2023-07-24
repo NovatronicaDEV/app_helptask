@@ -70,7 +70,7 @@ function App() {
           <Route path="clientes" element={<Clientes />} />
           <Route path="verClientes/:id" element={<VerCliente />} />
           <Route path="tarefas" element={<Tarefas />} />
-          <Route path="verTarefas" element={<VerTarefa />} />
+          <Route path="verTarefas/:id" element={<VerTarefa />} />
           <Route path="configuracoes" element={<Configuracao />} />
         </Route>
       </Routes>

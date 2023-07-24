@@ -58,6 +58,7 @@ const Login = () => {
 
       navigate("/pages/tarefas");
     } catch (error) {
+    
       console.log("erro");
     }
   };
