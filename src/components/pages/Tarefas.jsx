@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   BsSortAlphaDownAlt,
@@ -15,8 +15,9 @@ import ViewListTask from "../UI/ViewListTask";
 import ViewGroupTask from "../UI/ViewGroupTask";
 import NewTarefa from "../UI/NewTarefa";
 import { AiOutlinePlusCircle } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link,redirect } from "react-router-dom";
 import axios from "axios";
+import Pusher from "pusher-js";
 const Tarefas = () => {
   const [stateView, setStateView] = useState(true);
   const [sort, setSort] = useState("Asc");
@@ -29,18 +30,25 @@ const Tarefas = () => {
       try {
         // Faça a chamada à API e envie o token de autenticação no cabeçalho
         const token = localStorage.getItem("userToken");
-      
-        if (!token) {
-          // Lidar com o cenário em que o token não está disponível
-          return;
+        const isTokenValid = () => {
+         
+          const token = localStorage.getItem("userToken");
+          return !!token;
+        };
+        const tokenIsValid = isTokenValid();
+
+        // Redirect to login if the token is not valid
+        if (!tokenIsValid) {
+          
+          return <redirect to="/" />;
         }
-   
+
         const response = await axios.get("http://localhost:3000/task", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-   
+
         // Atualize o estado das tarefas com os dados da API
         setTarefas(response.data.task);
       } catch (error) {
@@ -48,7 +56,15 @@ const Tarefas = () => {
         console.error("Erro ao obter as tarefas:", error);
       }
     };
-
+    var pusher = new Pusher('44ff09de68fa52623d22', {
+      cluster: 'sa1'
+    });
+    if (pusher) {
+      var channel = pusher.subscribe('my-channel');
+      channel.bind('my-event', function (data) {
+        fetchTarefas();
+      });
+    }
     // Chame a função para obter as tarefas
     fetchTarefas();
   }, []);
@@ -86,11 +102,10 @@ const Tarefas = () => {
               onClick={() => {
                 setSort("Asc");
               }}
-              className={`${
-                sort == "Asc"
+              className={`${sort == "Asc"
                   ? "bg-primaryColor text-secudaryColor hover:bg-hoverColor"
                   : "border border-primaryColor text-primaryColor hover:text-hoverColor hover:border-hoverColor"
-              } w-8 h-8 flex items-center justify-center rounded-md cursor-pointer transition hover:shadow-lg transform hover:scale-[103%] duration-300 ease-out`}
+                } w-8 h-8 flex items-center justify-center rounded-md cursor-pointer transition hover:shadow-lg transform hover:scale-[103%] duration-300 ease-out`}
             >
               <BsSortAlphaUp size={20} />
             </div>
@@ -98,32 +113,29 @@ const Tarefas = () => {
               onClick={() => {
                 setSort("Desc");
               }}
-              className={`${
-                sort == "Desc"
+              className={`${sort == "Desc"
                   ? "bg-primaryColor text-secudaryColor hover:bg-hoverColor"
                   : "border border-primaryColor text-primaryColor hover:text-hoverColor hover:border-hoverColor"
-              } w-8 h-8 flex items-center justify-center rounded-md cursor-pointer transition hover:shadow-lg transform hover:scale-[103%] duration-300 ease-out`}
+                } w-8 h-8 flex items-center justify-center rounded-md cursor-pointer transition hover:shadow-lg transform hover:scale-[103%] duration-300 ease-out`}
             >
               <BsSortAlphaDownAlt size={20} />
             </div>
 
             <div
               onClick={() => setStateView(true)}
-              className={`${
-                stateView
+              className={`${stateView
                   ? "bg-primaryColor text-secudaryColor hover:bg-hoverColor"
                   : "border border-primaryColor text-primaryColor hover:text-hoverColor hover:border-hoverColor"
-              } w-8 h-8 flex items-center justify-center rounded-md cursor-pointer transition hover:shadow-lg transform hover:scale-[103%] duration-300 ease-out`}
+                } w-8 h-8 flex items-center justify-center rounded-md cursor-pointer transition hover:shadow-lg transform hover:scale-[103%] duration-300 ease-out`}
             >
               <BsListUl size={20} />
             </div>
             <div
               onClick={() => setStateView(false)}
-              className={`${
-                !stateView
+              className={`${!stateView
                   ? "bg-primaryColor text-secudaryColor hover:bg-hoverColor"
                   : "border border-primaryColor text-primaryColor hover:text-hoverColor hover:border-hoverColor"
-              } w-8 h-8 flex items-center justify-center rounded-md cursor-pointer transition hover:shadow-lg transform hover:scale-[103%] duration-300 ease-out`}
+                } w-8 h-8 flex items-center justify-center rounded-md cursor-pointer transition hover:shadow-lg transform hover:scale-[103%] duration-300 ease-out`}
             >
               <BsGrid3X3Gap size={20} />
             </div>
@@ -132,11 +144,10 @@ const Tarefas = () => {
 
         {/* list */}
         <div
-          className={`mt-5 grid ${
-            stateView
+          className={`mt-5 grid ${stateView
               ? "grid-rows"
               : "2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1"
-          } gap-4`}
+            } gap-4`}
         >
           {tarefas
             ?.filter((task) =>

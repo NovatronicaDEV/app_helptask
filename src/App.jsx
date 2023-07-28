@@ -21,6 +21,8 @@ import RedefinirSenha from "./components/pages/RedefinirSenha";
 import VerCliente from "./components/pages/VerCliente";
 import VerTarefa from "./components/pages/VerTarefa";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function Layout() {
   /* const navigate = useNavigate();
   navigate(0); */
@@ -60,6 +62,7 @@ function App() {
 
   return (
     <BrowserRouter>
+     <ToastContainer />
       <Routes>
         <Route path="/" element={<Layout2 />}>
           <Route path="/" element={<Login />} />
@@ -75,6 +78,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    
   );
 }
 

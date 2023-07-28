@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { format } from 'date-fns';
+
 //Componentes
 import ModalDelete from "../UI/ModalDelete";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import EditTarefa from "../UI/EditTarefa";
-
+import Pusher from "pusher-js";
+import { redirect } from "react-router-dom";
 const VerTarefa = () => {
   const [showModel, setShowModel] = useState(false);
   const [showOfcanva, setShowOfcanva] = useState(false);
@@ -18,8 +20,16 @@ const VerTarefa = () => {
     try {
 
       const token = localStorage.getItem("userToken");
-      if (!token) {
-        return;
+     
+      const isTokenValid = () => {
+        const token = localStorage.getItem("userToken");
+        return !!token;
+      };
+      const tokenIsValid = isTokenValid();
+
+      // Redirect to login if the token is not valid
+      if (!tokenIsValid) {
+        return <redirect to="/" />;
       }
       const response = await axios.get(`http://localhost:3000/task/` + id, {
         headers: {
@@ -34,6 +44,16 @@ const VerTarefa = () => {
     }
   };
   useEffect(() => {
+    var pusher = new Pusher('44ff09de68fa52623d22', {
+      cluster: 'sa1'
+    });
+    if (pusher) {
+      var channel = pusher.subscribe('my-channel');
+      channel.bind('my-event', function (data) {
+        getTarefaData();
+      });
+    }
+
     // Chamada para a API ao montar o componente
     getTarefaData();
   }, []);
@@ -45,7 +65,8 @@ const VerTarefa = () => {
   const showOfcanvaHandler = () => {
     setShowOfcanva(true);
   };
-  // const formattedDate = format(new Date(tarefas[0]?.created_at), "dd-MM-yyyy");
+
+
   return (
     <div className="bg-secudaryColor w-full min-h-screen overflow-auto">
       <div className="p-8">
@@ -109,7 +130,10 @@ const VerTarefa = () => {
 
           <div className=" grid bg-primaryColor bg-opacity-15 px-4 py-2 rounded-md mt-4">
             <span className="text-xs text-gray-700 ">Data de Registro</span>
-            {tarefas[0]?.created_at}
+
+            {tarefas[0]?.created_at && (
+              <p> {format(new Date(tarefas[0].created_at), 'dd/MM/yyyy HH:mm')}</p>
+            )}
           </div>
           <div className=" grid bg-primaryColor bg-opacity-15 px-4 py-2 rounded-md mt-4">
             <span className="text-xs text-gray-700 ">Anexo</span>
@@ -122,7 +146,7 @@ const VerTarefa = () => {
         </div>
       </div>
       {showModel && <ModalDelete setShowModal={setShowModel} />}
-      {showOfcanva && <EditTarefa setShowOfcanva={setShowOfcanva} />}
+      {showOfcanva && <EditTarefa id={id} setShowOfcanva={setShowOfcanva} />}
     </div>
   );
 };

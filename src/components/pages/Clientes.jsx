@@ -6,7 +6,7 @@ import { MdOutlineArrowForwardIos } from "react-icons/md";
 import Info from "../UI/Info";
 import InputSearch from "../UI/InputSearch";
 import NewCliente from "../UI/NewCliente";
-import { Link } from "react-router-dom";
+import { Link,redirect } from "react-router-dom";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import axios from "axios";
 const Clientes = () => {
@@ -20,9 +20,15 @@ const Clientes = () => {
     try {
       const token = localStorage.getItem("userToken");
       
-      if (!token) {
-        // Lidar com o cenário em que o token não está disponível
-        return;
+      const isTokenValid = () => {
+        const token = localStorage.getItem("userToken");
+        return !!token;
+      };
+      const tokenIsValid = isTokenValid();
+
+      // Redirect to login if the token is not valid
+      if (!tokenIsValid) {
+        return <redirect to="/" />;
       }
       const response = await axios.get("http://localhost:3000/clients", {
         headers: {
